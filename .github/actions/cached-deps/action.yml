@@ -1,15 +1,24 @@
 name: 'Get Cache & Dependencies'
 description: 'Get the dependencies (via npm) and cache them'
+inputs:
+  caching_nome_random:
+    description: 'Vuoi la cache o no?'
+    required: false
+    default: 'true'
+  #altro_input:
+    #description: 'descrizione'
+
 runs:
   using: 'composite'
   steps:
     - name: Cache dependencies
+      if: inputs.caching_nome_random == 'true'
       id: cache
       uses: actions/cache@v3
       with:
         path: node_modules
         key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
     - name: Install dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
+      if: steps.cache.outputs.cache-hit != 'true' || inputs.caching_nome_random != 'true'
       run: npm ci
       shell: bash
