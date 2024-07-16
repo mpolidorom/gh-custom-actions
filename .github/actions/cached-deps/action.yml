@@ -7,7 +7,10 @@ inputs:
     default: 'true'
   #altro_input:
     #description: 'descrizione'
-
+outputs:
+  usa-la-cache:
+    description: 'la cache è stata usata'
+    value: ${{ steps.install.outputs.cache}}
 runs:
   using: 'composite'
   steps:
@@ -20,5 +23,8 @@ runs:
         key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
     - name: Install dependencies
       if: steps.cache.outputs.cache-hit != 'true' || inputs.caching_nome_random != 'true'
-      run: npm ci
+      id: install
+      run: |
+        npm ci
+        echo "::set-output name=cache::'${{  inputs.caching_nome_random }}'"
       shell: bash
